@@ -4,4 +4,5 @@ This project was generated with [angular-cli](https://github.com/angular/angular
 
 ## Development server
 Terminal 1 : run `ng build --watch`
+
 Terminal 2 : `cd server`, then run `nodemon` - this server will look in /dist and run the Angular 2 front-end.
