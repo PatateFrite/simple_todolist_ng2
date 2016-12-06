@@ -1,0 +1,10 @@
+<ul class="results">
+  <li class="noResult" *ngIf="!todos?.length">
+    <h2>Nothing to show here :(</h2>
+  </li>
+  <li class="result"
+      *ngFor="let todo of todos">
+    <button (click)="delete(todo.id)">X</button>
+    <span>{{todo.title}}</span>
+  </li>
+</ul>
