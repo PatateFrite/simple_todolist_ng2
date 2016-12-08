@@ -1,27 +1,24 @@
-let todos =  [
-    {id : 1, title : "Donner à manger au chien"},
-    {id : 2, title : "Aller à la gym"},
-    {id : 3, title : "Appeler ma grand mère"},
-  ]
 
-let lastId = 3;
+const Todo = require('./mongo').Todo
 
 const api = {
 	getItems : (req,res) => {
-		res.send(todos)
+		Todo.find((err, docs) => {
+			if(err) return console.log(err);
+			res.json(docs);
+		})
 	},
-
 	deleteItem : (req,res) => {
-		const id = req.params.id;
-		todo = todos.find( todo => todo.id === id )
-		todos = todos.filter(todo => todo.id !== id);
-		res.send(todo)
+		Todo.findByIdAndRemove(req.params.id,  (err, doc) => {
+			if(err) return console.log(err);
+			res.json(doc);
+		})
 	},
-
 	addItem : (req,res) =>{
-		const todo = { id : ++lastId, title : req.body.title.trim()};
-		todos.push(todo);
-		res.send(todo);
+		(new Todo(req.body)).save((err, doc) => {
+			if(err) return console.log(err);
+			res.json(doc);
+		})
 	}
 }
 

@@ -1,62 +1,54 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
-import {Todo} from './todo';
+import { Todo } from './todo';
+
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class TodoService {
 
-  // Placeholder for todo's
   todos: Todo[] = [];
-  newTodo:Todo = {id:0,title:""};
-  lastId: number = 3;
+  newTodo: Todo = { _id: 0, title: "" };
 
-  constructor(private http: Http) {
-  }
+  constructor(private http: Http) { }
 
-  addTodo(todo: Todo):  Promise<Todo> {
-      return this.http
-        .post("/todos", todo)
-        .toPromise()
-        .then((res) => { this.todos.push(res.json()) } )
-        .catch((err) => console.log(err));
+  // Observable todos source
+  private _todosSource = new ReplaySubject<Todo[]>(1);
+  // Observable todos stream
+  todos$ = this._todosSource.asObservable();
 
-  }
-
-  deleteTodoById(id: number): Promise<Todo> {
-
-      console.log("DELETE id = ", id)
-
-      return this.http
-        .post("/delete", {id:id}) // Cannot pass id with DELETE method (??)
-        .toPromise()
-        .then((res) => { console.log("delete response", res.json()) } )
-        .catch((err) => console.log(err));
-  }
-
-  // Simulate PUT /todos/:id
-  updateTodoById(id: number, values: Object = {}): Todo {
-    let todo = this.getTodoById(id);
-    if (!todo) {
-      return null;
-    }
-    Object.assign(todo, values);
-    return todo;
-  }
-
-  getAllTodos():  Promise<Todo[]> {
+  addTodo(todo: Todo): Promise<Todo> {
     return this.http
-			.get("/todos")
-			.toPromise()
-      .then((res) => { this.todos = res.json() } )
-			.catch((err) => console.log(err));
+      .post("/todos", todo)
+      .toPromise()
+      .then( res => {
+          this.todos.push(res.json())
+          this._todosSource.next(this.todos);
+      })
+      .catch( err => console.log(err));
   }
 
-  // Simulate GET /todos/:id
-  getTodoById(id: number): Todo {
-    return this.todos
-      .filter(todo => todo.id === id)
-      .pop();
+  deleteTodoById( _id: number): Promise<Todo> {
+    return this.http
+      .delete( "/" + _id)
+      .toPromise()
+      .then((res) => {
+        console.log("delete response", res.json())
+        this.todos = this.todos.filter( todo => todo._id !== _id )
+        this._todosSource.next(this.todos);
+      })
+      .catch((err) => console.log(err));
   }
+
+  getAllTodos(): Promise<Todo[]> {
+    return this.http
+      .get("/todos")
+      .toPromise()
+      .then((res) => { this.todos = res.json() })
+      .catch((err) => console.log(err));
+  }
+
 
 }

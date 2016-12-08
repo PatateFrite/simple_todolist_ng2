@@ -16,7 +16,7 @@ export class AppComponent {
 
   addTask(){
     console.log("adding " + this.newTodo.title)
-    this.todoService.addTodo(this.newTodo);
+    this.todoService.addTodo(this.newTodo)
     this.newTodo.title = "";
   }
 

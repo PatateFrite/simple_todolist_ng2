@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "mocha-test" : "mocha"
+    "mocha-test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "jasmine-node": "^1.14.5",
     "mocha": "^3.2.0"
   }
 }
